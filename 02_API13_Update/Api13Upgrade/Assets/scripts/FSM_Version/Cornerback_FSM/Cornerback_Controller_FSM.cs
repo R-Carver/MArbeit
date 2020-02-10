@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Cornerback_Controller_FSM : MonoBehaviour, IResettable
+public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwareness
 {
     #region Player vars
 
@@ -42,13 +42,17 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable
     {
         myRb = GetComponent<Rigidbody2D>();
 
-        ballGo = GameObject.Find("Ball");
+        
         ball_controller = GameObject.Find("QB").GetComponent<Ball_Controller>();
         qB_Controller = GameObject.Find("QB").GetComponent<QB_Controller_FSM>();
+
+        ball_controller.ballAwarePlayers.Add(this);
     }
 
     void Start()
     {
+        //ballGo = GameObject.Find("Ball");
+
         TransitionToState(push_State);
 
         //save startPos for reset later
@@ -118,5 +122,10 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable
         myRb.angularVelocity = 0;
 
         TransitionToState(push_State);
+    }
+
+    public void UpdateBallInstance(GameObject ball)
+    {
+        ballGo = ball;
     }
 }

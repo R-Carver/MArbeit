@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Receiver_Routes
 {   
@@ -12,6 +13,8 @@ public class Receiver_Routes
         {
             Instance = this;
             InitRoutes();
+            InitSideRoutes();
+
         }else
         {
             //Debug.LogError("There shouldnt ever be 2 Receiver_Ropoute classes");
@@ -20,7 +23,9 @@ public class Receiver_Routes
     }
 
     //make a dict from enum to route
-    public Dictionary<RouteName, Route> routes = new Dictionary<RouteName, Route>();
+    public static Dictionary<RouteName, Route> routes = new Dictionary<RouteName, Route>();
+    public static Dictionary<RouteName, Route> routesForLeft = new Dictionary<RouteName, Route>();
+    public static Dictionary<RouteName, Route> routesForRight = new Dictionary<RouteName, Route>();
 
     void InitRoutes()
     {   
@@ -31,6 +36,8 @@ public class Receiver_Routes
         Vector2 forward_right = new Vector2(1, -1);
         Vector2 left = new Vector2(0, 1);
         Vector2 right = new Vector2(0, -1);
+        Vector2 back_left = new Vector2(-1, 1);
+        Vector2 back_right = new Vector2(-1, -1);
 
 
         //post
@@ -39,6 +46,7 @@ public class Receiver_Routes
         postPoints[0] = forward * 7;
         
         Route postRoute = new Route(RouteName.Post, postPoints);
+        postRoute.playerSide = PlayerSide.Center;
 
         routes.Add(postRoute.routeName, postRoute);
 
@@ -51,6 +59,7 @@ public class Receiver_Routes
         slantLPoints[1] = forward_left * 4;
         
         Route slantLRoute = new Route(RouteName.Slant_Left, slantLPoints);
+        slantLRoute.playerSide = PlayerSide.Right;
 
         routes.Add(slantLRoute.routeName, slantLRoute);
 
@@ -63,6 +72,7 @@ public class Receiver_Routes
         slantRPoints[1] = forward_right * 4;
         
         Route slantRRoute = new Route(RouteName.Slant_Right, slantRPoints);
+        slantRRoute.playerSide = PlayerSide.Left;
 
         routes.Add(slantRRoute.routeName, slantRRoute);
 
@@ -75,6 +85,7 @@ public class Receiver_Routes
         insideLPoints[1] = left * 5;
         
         Route insideLRoute = new Route(RouteName.Inside_Left, insideLPoints);
+        insideLRoute.playerSide = PlayerSide.Right;
 
         routes.Add(insideLRoute.routeName, insideLRoute);
 
@@ -87,10 +98,97 @@ public class Receiver_Routes
         insideRPoints[1] = right * 5;
         
         Route insideRRoute = new Route(RouteName.Inside_Right, insideRPoints);
+        insideRRoute.playerSide = PlayerSide.Left;
 
         routes.Add(insideRRoute.routeName, insideRRoute);
 
         //--------------------------------------------------------------
+
+        //comeback left
+        Vector2[] comebackLPoints = new Vector2[2];
+
+        comebackLPoints[0] = forward * 4;
+        comebackLPoints[1] = back_left;
+
+        Route comebackLRoute = new Route(RouteName.Comeback_Left, comebackLPoints);
+        comebackLRoute.playerSide = PlayerSide.Right;
+
+        routes.Add(comebackLRoute.routeName, comebackLRoute);
+
+        //--------------------------------------------------------------
+
+        //comeback Right
+        Vector2[] comebackRPoints = new Vector2[2];
+
+        comebackRPoints[0] = forward * 4;
+        comebackRPoints[1] = back_right;
+
+        Route comebackRRoute = new Route(RouteName.Comeback_Right, comebackRPoints);
+        comebackRRoute.playerSide = PlayerSide.Left;
+
+        routes.Add(comebackRRoute.routeName, comebackRRoute);
+
+        //--------------------------------------------------------------
+
+        //outside Right
+        Vector2[] outsideRPoints = new Vector2[2];
+
+        outsideRPoints[0] = forward * 3;
+        outsideRPoints[1] = right * 2;
+
+        Route outsideRRoute = new Route(RouteName.Outside_Right, outsideRPoints);
+        outsideRRoute.playerSide = PlayerSide.Right;
+
+        routes.Add(outsideRRoute.routeName, outsideRRoute);
+
+        //--------------------------------------------------------------
+
+        //outside Left
+        Vector2[] outsideLPoints = new Vector2[2];
+
+        outsideLPoints[0] = forward * 3;
+        outsideLPoints[1] = left * 2;
+
+        Route outsideLRoute = new Route(RouteName.Outside_Left, outsideLPoints);
+        outsideLRoute.playerSide = PlayerSide.Left;
+
+        routes.Add(outsideLRoute.routeName, outsideLRoute);
+    }
+
+    void InitSideRoutes()
+    {
+        foreach(Route route in routes.Values)
+        {
+            if(route.playerSide == PlayerSide.Left)
+            {
+                routesForLeft.Add(route.routeName, route);
+            }
+            else if(route.playerSide == PlayerSide.Right)
+            {
+                routesForRight.Add(route.routeName, route);
+            }
+            else
+            {
+                //central routes
+                routesForLeft.Add(route.routeName, route);
+                routesForRight.Add(route.routeName, route);
+            }
+        }
+        
+    }
+
+    public static Route getRandomSideRoute(PlayerSide side)
+    {   
+        Route[] routesLeft = routesForLeft.Values.ToArray();
+        Route[] routesRight = routesForRight.Values.ToArray();
+
+        if(side == PlayerSide.Left)
+        {
+            return routesLeft[Random.Range(0, routesLeft.Length)];
+        }else
+        {
+            return routesRight[Random.Range(0, routesRight.Length)];
+        }
     }
 
 }
@@ -98,6 +196,9 @@ public class Receiver_Routes
 public class Route
 {   
     public RouteName routeName;
+
+    //for which players is this route
+    public PlayerSide playerSide;
 
     //the vectors are relative
     public Vector2[] routePoints;
@@ -158,4 +259,22 @@ public class Route
     
 }
 
-public enum RouteName{Post, Slant_Left, Slant_Right, Inside_Left, Inside_Right};
+public enum RouteName{
+    Post, 
+    Slant_Left, 
+    Slant_Right, 
+    Inside_Left, 
+    Inside_Right,
+    Comeback_Left,
+    Comeback_Right,
+    Outside_Left,
+    Outside_Right
+};
+
+public enum PlayerSide{
+    Left, 
+    Right, 
+    Center
+}
+
+

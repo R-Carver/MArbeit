@@ -31,7 +31,8 @@ public class Cornerback_Cover_State : Cornerback_Base_State
         if(cornerback.qB_Controller.Receiver_current == cornerback.PlayerToCover.gameObject)
         {
             //here we make sure that onlt the right cornerback tries to intercept the ball
-            if (cornerback.ball_controller.launched == true)
+            //if (cornerback.ball_controller.launched == true)
+            if(GameManager.Instance.ballLaunched == true)
             {
                 cornerback.TransitionToState(cornerback.intercept_State);
             }

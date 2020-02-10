@@ -36,6 +36,7 @@ public class DefenderController_FSM : MonoBehaviour,IResettable
     public readonly Def_PassBlock_Push_State push_State = new Def_PassBlock_Push_State();
     public readonly Def_Idle_State idle_state = new Def_Idle_State();
     public readonly Def_KnockedOver_State down_state = new Def_KnockedOver_State();
+    public readonly Def_Reset_State reset_State = new Def_Reset_State();
 
     #endregion
 
@@ -91,13 +92,18 @@ public class DefenderController_FSM : MonoBehaviour,IResettable
     }
 
     void IResettable.Reset()
-    {
+    {   
+        this.joint.enabled = false;
+
         this.transform.position = startPos;
         this.transform.rotation = startRot;
 
         myRb.angularVelocity = 0;
         myRb.velocity = Vector2.zero;
 
-        TransitionToState(passBlock_State);
+        
+
+        //TransitionToState(passBlock_State);
+        TransitionToState(reset_State);
     }
 }

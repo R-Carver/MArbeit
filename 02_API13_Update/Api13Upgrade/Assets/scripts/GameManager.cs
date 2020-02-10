@@ -7,7 +7,15 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
     public List<IResettable> allPlayers = new List<IResettable>();
 
+    [HideInInspector]
+    public PassAgent passAgent;
+
     public GameObject ThrowTrigger;
+
+    //use this to determine whether some player is to the right or left of the qb
+    public Transform GameOrigin;
+
+    public float catchableHeight = 1.3f;
 
     //flags for resetting, the actual resetting is executed on the Agent
     public bool ballCaught = false;
@@ -60,6 +68,9 @@ public class GameManager : MonoBehaviour
         canThrow = false;
 
         ThrowTrigger.SetActive(true);
+
+        //make sure the Agents starts its decision process only after the env is reset
+        passAgent.episodeDone = false;
     }
 
     // Update is called once per frame

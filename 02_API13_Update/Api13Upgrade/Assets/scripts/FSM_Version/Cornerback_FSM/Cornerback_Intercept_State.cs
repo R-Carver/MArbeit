@@ -27,17 +27,29 @@ public class Cornerback_Intercept_State : Cornerback_Base_State
 
     public override void OnTriggerEnter(Cornerback_Controller_FSM cornerback, Collider2D other)
     {   
-        //catch ball
         if(other.gameObject.tag == "Ball")
-        {   
-            other.gameObject.tag = "BallCaught";
-
+        {
             Transform ballGo = other.gameObject.transform.parent;
-            ballGo.parent = cornerback.transform;
-            ballGo.transform.position = cornerback.transform.position;
 
-            cornerback.TransitionToState(cornerback.ballCaught_State);
-        }
+            //check the height of the ball
+            Debug.Log("Ball height: " + "<color=green><b> " + ballGo.transform.position.z + "</b></color>");
+            bool canCatchBall = ballGo.transform.position.z <= GameManager.Instance.catchableHeight;
+
+            //try to catch ball
+            if (canCatchBall)
+            {
+                other.gameObject.tag = "BallCaught";
+
+                ballGo.parent = cornerback.transform;
+                ballGo.transform.position = cornerback.transform.position;
+
+                cornerback.TransitionToState(cornerback.ballCaught_State);
+            }
+            else
+            {
+                cornerback.TransitionToState(cornerback.cover_State);
+            }
+        }   
     }
 
     public override void OnTriggerExit(Cornerback_Controller_FSM cornerback, Collider2D other)

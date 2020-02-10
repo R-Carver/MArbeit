@@ -48,7 +48,7 @@ public class Def_KnockedOver_State : DefenderBaseState
 
         player.myRb.isKinematic = false;
 
-        player.joint.enabled = true;
+        //player.joint.enabled = true;
         player.GetComponent<Collider2D>().enabled = true;
 
         oldSpriteObj.SetActive(true);

@@ -4,45 +4,76 @@ using UnityEngine;
 
 public class Ball_Controller : MonoBehaviour, IResettable
 {
-    public Rigidbody ball;
+    //public Rigidbody ball;
+    Rigidbody ball;
     public Transform target;
+    public Transform  prefab_Ball;
 
     public float h;
     public float gravity;
 
     public bool launched = false;
+    //public bool activateThrowHack = false;
 
     Vector3 ballStartPosition;
+    Quaternion ballStartRotation;
 
     //this is the go with the 2d collider
     GameObject ball2D;
 
+    public List<IBallAwareness> ballAwarePlayers = new List<IBallAwareness>();
+
+    void Awake() 
+    {
+        GameObject ballGo = InstantiateBall();
+        UpdateBallAwarePlayers(ballGo);
+        ball = ballGo.GetComponent<Rigidbody>();
+    }
     void Start(){
 
-        GameManager.Instance.allPlayers.Add(this);
-
+        //GameManager.Instance.allPlayers.Add(this);
         Physics.gravity = Vector3.forward * gravity;
 
         ball.useGravity = false;
 
         ballStartPosition = ball.gameObject.transform.position;
+        ballStartRotation = ball.gameObject.transform.rotation;
 
         //use this to change the tag of the ball when resetting
         ball2D = GameObject.Find("Ball2d");
-        
     }
 
     void Update(){
 
         // keep track if the ball fell of the plane
-        if(ball.position.z < 0)
+        if(ball != null)
         {
+            if (ball.position.z < 0)
+            {
+                //make the ball stop when hits the ground for debug
+                ball.isKinematic = true;
+            }
+        }
+        
+    }
 
-            //make the ball stop when hits the ground for debug
-            ball.isKinematic = true;
+    GameObject InstantiateBall()
+    {
+        //try to instantiate the ball here to prevent the nothrow bug
+        Vector3 qbPos = this.gameObject.transform.position;
+        //Vector3 ballPos = new Vector3()
+        Transform ballGo  = Instantiate(prefab_Ball, qbPos, Quaternion.identity);
+        ballGo.parent = this.gameObject.transform;
+        ballGo.transform.position += new Vector3(0f, -0.28f, 0f);
+        ballGo.name = "Ball";
+        return ballGo.gameObject;
+    }
 
-            //Invoke("ResetLauncher",1);
-            
+    void UpdateBallAwarePlayers(GameObject ball)
+    {
+        foreach(IBallAwareness player in ballAwarePlayers)
+        {
+            player.UpdateBallInstance(ball);
         }
     }
 
@@ -51,8 +82,29 @@ public class Ball_Controller : MonoBehaviour, IResettable
         ball.useGravity = true;
         //print("curr LaunchData   " + currentLaunchData.initialVelocity);
         ball.velocity = CalculateLaunchData().initialVelocity;
+        Debug.Log("<color=red> Ball velocity  <b>" + ball.velocity + "</b></color>");
         ball.angularVelocity = Vector3.zero;
         launched = true;
+
+        StartCoroutine(TestForThrowBug(ball.velocity));
+    }
+
+    IEnumerator TestForThrowBug(Vector3 velocity)
+    {   
+        yield return new WaitForSeconds(1f);
+        //hack for fixing the "not throwing" bug
+        //here we try to find out if the bug is currently happening
+        if(launched == true && ball.velocity == Vector3.zero)
+        {
+            //Debug.Log("<color=teal> Ball velocity  <b>" + ball.velocity + "</b></color>");
+            //Debug.Log("<color=teal> Shouldnt be zero  <b>" + velocity + "</b></color>");
+            Debug.Log("<color=brown> <b>" + "Hier ist der Fehler" + "</b></color>");
+
+            //activateThrowHack = true;
+            //set the velocity again, this should solve the bug
+            //ball.velocity = velocity;
+            
+        }
     }
 
     public LaunchData CalculateLaunchData(){
@@ -96,23 +148,26 @@ public class Ball_Controller : MonoBehaviour, IResettable
         }
     }
 
-    public void ResetLauncher()
+    public void Reset()
     {
+        Destroy(ball.gameObject); 
+        GameObject ballGo = InstantiateBall();
+        UpdateBallAwarePlayers(ballGo);
+
+        ball = ballGo.GetComponent<Rigidbody>();
+        ball2D = GameObject.Find("Ball2d");
+        ball2D.gameObject.tag = "Ball";
+
         ball.useGravity = false;
         ball.velocity = Vector3.zero;
         ball.angularVelocity = Vector3.zero;
         launched = false;
 
         ball.gameObject.transform.position = ballStartPosition;
+        ball.gameObject.transform.rotation = ballStartRotation;
         ball.isKinematic = false;
         ball.transform.parent = this.transform;
         //target.position = new Vector3(3, 0, 0);
-    }
-
-    public void Reset()
-    {   
-        ball2D.gameObject.tag = "Ball";
-        ResetLauncher();
     }
 
     public struct LaunchData{
@@ -125,4 +180,10 @@ public class Ball_Controller : MonoBehaviour, IResettable
             this.timeToTarget = timeToTarget;
         }
     }
+}
+
+//for skript which need to access the current ball instanz
+public interface IBallAwareness
+{
+    void UpdateBallInstance(GameObject ball);
 }

@@ -9,12 +9,18 @@ public class PassAgent : Agent
     GameManager gameManager;
 
     bool firstStart;
+    
+    //keeps track whether the learning part of this episode is done,
+    //such that some visual things can happen without constantly resetting the agent
+    public bool episodeDone;
 
     // Start is called before the first frame update
     void Start()
     {
         qB_Controller = GetComponent<QB_Controller_FSM>();
         gameManager = GameManager.Instance;
+        //register yourself with the GameManager
+        gameManager.passAgent = this;
 
         firstStart = true;
     }
@@ -27,7 +33,7 @@ public class PassAgent : Agent
 
     public override void AgentReset()
     {
-        Debug.Log("Agent was reset");
+        //Debug.Log("Agent was reset");
         if(!firstStart)
         {
             GameManager.Instance.ScheduleReset();
@@ -54,7 +60,7 @@ public class PassAgent : Agent
 
     public override void AgentAction(float[] vectorAction)
     {   
-        Debug.Log("Agent Action" + vectorAction[0]);
+        //Debug.Log("Agent Action" + vectorAction[0]);
         if((int)vectorAction[0] == 0)
         {
             //do nothing
@@ -63,22 +69,28 @@ public class PassAgent : Agent
             qB_Controller.ChooseReceiver((int)vectorAction[0]);
         }
 
-        if(gameManager.ballCaught || gameManager.qbSacked || gameManager.ballIntercepted) 
-        {   
-            if(gameManager.ballCaught)
+        if(episodeDone == false)
+        {
+            if (gameManager.ballCaught || gameManager.qbSacked || gameManager.ballIntercepted)
             {
-                SetReward(1.0f);
+                if (gameManager.ballCaught)
+                {
+                    SetReward(1.0f);
+                }
+                if (gameManager.qbSacked)
+                {
+                    SetReward(-1.0f);
+                }
+                if (gameManager.ballIntercepted)
+                {
+                    SetReward(-1.0f);
+                }
+                Done();
+                episodeDone = true;
             }
-            if(gameManager.qbSacked)
-            {
-                SetReward(-1.0f);
-            }
-            if(gameManager.ballIntercepted)
-            {
-                SetReward(-1.0f);
-            }
-            Done();
         }
+
+        
         
     }
 

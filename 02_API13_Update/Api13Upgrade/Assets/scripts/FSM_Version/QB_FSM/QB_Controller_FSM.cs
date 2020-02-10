@@ -124,6 +124,11 @@ public class QB_Controller_FSM : MonoBehaviour, IResettable
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0;
 
+        //GameObject oldBall = GameObject.Find("Ball");
+        //Destroy(oldBall);
+
+        ball_Controller.Reset();
+
         TransitionToState(chooserTarget_State);
     }
 }

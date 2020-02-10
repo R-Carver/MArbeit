@@ -97,5 +97,6 @@ public class Def_PassBlock_Push_State : DefenderBaseState
     public override void CleanUp(DefenderController_FSM player)
     {   
         player.myRb.angularVelocity = 0.0f;
+        player.joint.enabled = false;
     }
 }

@@ -80,7 +80,7 @@ public class Rusher_Controller_FSM : MonoBehaviour, IResettable
     }
 
     public void Reset()
-    {
+    {   
         this.transform.position = startPos;
         this.transform.rotation = startRot;
 

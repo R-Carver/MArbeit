@@ -11,6 +11,8 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
     //public Transform currentTarget;
     public Vector2 currentTarget;
 
+    public PlayerSide mySide;
+
     [HideInInspector]
     public Rigidbody2D myRb;
     public float speed;
@@ -48,13 +50,30 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
 
         //set the current Route depending on the chosen route Name
         //we use the one from the routes dict as template and create a new one so its not shared
-        currentRoute = new Route(currentRouteName, Receiver_Routes.Instance.routes[currentRouteName].routePoints);
+        mySide = checkPlayerSide();
+        
+        //currentRoute = new Route(currentRouteName, Receiver_Routes.Instance.routes[currentRouteName].routePoints);
+        currentRoute = Receiver_Routes.getRandomSideRoute(mySide);
+        currentRouteName = currentRoute.routeName;
 
         //set the first Target
         //currentTarget = this.transform.position;
         currentTarget = (Vector2)this.transform.position + currentRoute.GetFirstRoutePoint();
 
         TransitionToState(runRoute_State);
+    }
+
+    private PlayerSide checkPlayerSide()
+    {
+        if(this.transform.position.y > GameManager.Instance.GameOrigin.position.y)
+        {
+            //this means the player is on the left side
+            return PlayerSide.Left;
+        }else
+        {   
+            //right side
+            return PlayerSide.Right;
+        }
     }
 
     public void TransitionToState(Receiver_Base_State state)
@@ -106,11 +125,13 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
         myRb.angularVelocity = 0;
         myRb.velocity = Vector2.zero;
 
+        currentRoute.ResetRoute();
+        currentRoute = Receiver_Routes.getRandomSideRoute(mySide);
+        currentRouteName = currentRoute.routeName;
+
         //set the first Target
         //currentTarget = this.transform.position;
         currentTarget = (Vector2)this.transform.position + currentRoute.GetFirstRoutePoint();
-
-        currentRoute.ResetRoute();
 
         TransitionToState(runRoute_State);
     }
