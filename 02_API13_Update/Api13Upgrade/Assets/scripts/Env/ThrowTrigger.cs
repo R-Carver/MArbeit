@@ -8,7 +8,7 @@ public class ThrowTrigger : MonoBehaviour
     {
             if(other.gameObject.tag == "Receiver")
             {
-                Debug.Log("Recevier reached Throw zone");
+                //Debug.Log("Recevier reached Throw zone");
                 GameManager.Instance.canThrow = true;
                 this.gameObject.SetActive(false);
             }

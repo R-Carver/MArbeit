@@ -182,13 +182,19 @@ public class Receiver_Routes
         Route[] routesLeft = routesForLeft.Values.ToArray();
         Route[] routesRight = routesForRight.Values.ToArray();
 
+        //make sure to return a new route, to make sure that
+        //the route from the dict is not used by several receivers
+
+        Route tempRoute;
         if(side == PlayerSide.Left)
         {
-            return routesLeft[Random.Range(0, routesLeft.Length)];
+            tempRoute = routesLeft[Random.Range(0, routesLeft.Length)];
         }else
         {
-            return routesRight[Random.Range(0, routesRight.Length)];
+            tempRoute = routesRight[Random.Range(0, routesRight.Length)];
         }
+        Route outRoute = new Route(tempRoute.routeName, tempRoute.routePoints);
+        return outRoute;
     }
 
 }

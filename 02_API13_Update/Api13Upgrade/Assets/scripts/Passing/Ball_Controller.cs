@@ -82,7 +82,7 @@ public class Ball_Controller : MonoBehaviour, IResettable
         ball.useGravity = true;
         //print("curr LaunchData   " + currentLaunchData.initialVelocity);
         ball.velocity = CalculateLaunchData().initialVelocity;
-        Debug.Log("<color=red> Ball velocity  <b>" + ball.velocity + "</b></color>");
+        //Debug.Log("<color=red> Ball velocity  <b>" + ball.velocity + "</b></color>");
         ball.angularVelocity = Vector3.zero;
         launched = true;
 

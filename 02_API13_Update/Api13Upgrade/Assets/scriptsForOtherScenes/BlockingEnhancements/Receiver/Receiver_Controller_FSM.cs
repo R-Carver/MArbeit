@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace BlockingEnhancements
+{
 public class Receiver_Controller_FSM : MonoBehaviour, IResettable
 {
     #region Player vars
@@ -41,7 +43,7 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
         startRot = this.transform.rotation;
 
         //get a random spped for this player
-        speed = Random.Range(2.0f, 4.0f);
+        speed = Random.Range(1.0f, 2.0f);
 
     }
 
@@ -138,4 +140,5 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
 
         TransitionToState(runRoute_State);
     }
+}
 }

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace BlockingEnhancements
+{
 public class Cornerback_Intercept_State : Cornerback_Base_State
 {   
 
@@ -65,4 +67,5 @@ public class Cornerback_Intercept_State : Cornerback_Base_State
         float angle = Vector2.SignedAngle(cornerback.ballGo.transform.position - cornerback.transform.position, new Vector2(1.0f, 0.0f));
         cornerback.myRb.MoveRotation(Mathf.LerpAngle(cornerback.myRb.rotation, -angle, cornerback.rotationSpeed * Time.deltaTime));
     }
+}
 }

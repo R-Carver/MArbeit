@@ -14,6 +14,8 @@ public class PassAgent : Agent
     //such that some visual things can happen without constantly resetting the agent
     public bool episodeDone;
 
+    float targetTime = 30.0f;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +30,7 @@ public class PassAgent : Agent
     // Update is called once per frame
     void Update()
     {
-        
+        targetTime -= Time.deltaTime;
     }
 
     public override void AgentReset()
@@ -40,7 +42,9 @@ public class PassAgent : Agent
         }
 
         firstStart = false;
-        
+
+        //learning reset bug
+        targetTime = 30.0f;
     }
 
     public override void CollectObservations()
@@ -48,13 +52,13 @@ public class PassAgent : Agent
         //dont allow to throw when the receivers are not ready
         if(gameManager.canThrow == false)
         {
-            SetActionMask(0, new int[3]{1, 2, 3});
+            SetActionMask(0, new int[5]{1, 2, 3, 4, 5});
         }
 
-        //dont allow to throw when the ball is caught
+        //dont allow to throw when the ball is thrown
         if(gameManager.ballLaunched == true)
         {
-            SetActionMask(0, new int[3]{1, 2, 3});
+            SetActionMask(0, new int[5]{1, 2, 3, 4, 5});
         }
     }
 
@@ -88,6 +92,14 @@ public class PassAgent : Agent
                 Done();
                 episodeDone = true;
             }
+
+            //learning reset bug
+            if(targetTime <= 0.0f)
+            {   
+                Debug.LogError("Learning reset Error occured");
+                Done();
+                episodeDone = true;
+            }
         }
 
         
@@ -107,6 +119,12 @@ public class PassAgent : Agent
         }else if(Input.GetKeyDown(KeyCode.Alpha3))
         {
             action[0] = 3;
+        }else if(Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            action[0] = 4;
+        }else if(Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            action[0] = 5;
         }else
         {
             action[0] = 0;

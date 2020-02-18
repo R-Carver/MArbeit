@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace BlockingEnhancements
+{
 public class Receiver_RunRoute_State : Receiver_Base_State
 {
     public override void CleanUp(Receiver_Controller_FSM receiver)
@@ -58,4 +60,5 @@ public class Receiver_RunRoute_State : Receiver_Base_State
             
         }
     }
+}
 }

@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     //use this to determine whether some player is to the right or left of the qb
     public Transform GameOrigin;
 
-    public float catchableHeight = 1.3f;
+    public float catchableHeight = 1.1f;
 
     //flags for resetting, the actual resetting is executed on the Agent
     public bool ballCaught = false;
@@ -61,6 +61,9 @@ public class GameManager : MonoBehaviour
         {
             player.Reset();
         }
+
+        ManageScoreInformation();
+
         ballCaught = false;
         qbSacked = false;
         ballIntercepted = false;
@@ -71,6 +74,35 @@ public class GameManager : MonoBehaviour
 
         //make sure the Agents starts its decision process only after the env is reset
         passAgent.episodeDone = false;
+    }
+
+    int count_total = 0;
+    int count_qbSacked = 0;
+    int count_intercepted = 0;
+    int count_ballsCaught = 0;
+
+    void ManageScoreInformation()
+    {
+        count_total ++;
+
+        if(ballCaught)
+        {
+            count_ballsCaught ++;
+        }else if(ballIntercepted)
+        {
+            count_intercepted ++;
+        }else if(qbSacked)
+        {
+            count_qbSacked ++;
+        }
+
+        float ratio = ((float)count_ballsCaught/(float)count_total);
+        Debug.Log("Ratio: " + ratio);
+        Debug.Log("total throws:" + count_total + 
+            " <color=red> sacks: <b>" + count_qbSacked + "</b>" +
+            " interceptions: <b>" + count_intercepted + "</b></color>" +
+            " <color=green> balls caught: <b>" + count_ballsCaught + "</b></color>" + 
+            " <color=black> success %: <b>" + System.Math.Round(ratio, 2) + "</b></color>");
     }
 
     // Update is called once per frame
