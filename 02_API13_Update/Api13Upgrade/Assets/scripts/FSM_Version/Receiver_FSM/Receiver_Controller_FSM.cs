@@ -123,7 +123,11 @@ public class Receiver_Controller_FSM : MonoBehaviour, IResettable
     public void Reset()
     {
         this.transform.position = startPos;
+        //this.transform.position = Receiver_StartPositions.Instance.getRandomStartPos();
         this.transform.rotation = startRot;
+
+        //get a random spped for this player
+        speed = Random.Range(2.0f, 4.0f);
 
         myRb.angularVelocity = 0;
         myRb.velocity = Vector2.zero;

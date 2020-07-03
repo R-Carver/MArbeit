@@ -51,7 +51,7 @@ public class Ball_Controller : MonoBehaviour, IResettable
             if (ball.position.z < 0)
             {
                 //make the ball stop when hits the ground for debug
-                ball.isKinematic = true;
+                //ball.isKinematic = true;
             }
         }
         

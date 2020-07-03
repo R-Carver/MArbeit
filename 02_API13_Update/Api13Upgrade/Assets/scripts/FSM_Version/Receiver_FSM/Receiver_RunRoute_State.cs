@@ -23,16 +23,23 @@ public class Receiver_RunRoute_State : Receiver_Base_State
 
             //check the height of the ball
             //Debug.Log("Ball height: " + "<color=orange><b> " +  ballGo.transform.position.z  + "</b></color>");
+            bool canCatchBall = ballGo.transform.position.z <= GameManager.Instance.catchableHeight;
 
-            //catch ball  
+            if(canCatchBall)
+            {
+                //catch ball  
             col.gameObject.tag = "BallCaught";
 
             //ballGo.parent.GetComponent<Ball_Controller>().enabled = false;
             ballGo.parent = receiver.transform;
             ballGo.transform.position = receiver.transform.position;
 
+            Rigidbody ballRb = ballGo.GetComponent<Rigidbody>();
+            ballRb.isKinematic = true;
+
             //set the game to be reset
             GameManager.Instance.ballCaught = true;
+            }
         }
     }
 

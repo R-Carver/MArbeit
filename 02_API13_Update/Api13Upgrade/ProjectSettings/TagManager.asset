@@ -23,7 +23,7 @@ TagManager:
   - OLiner
   - DLiner
   - RedTeam
-  - 
+  - Zones
   - 
   - 
   - 
@@ -46,4 +46,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: field
+    uniqueID: 1201591305
+    locked: 0
+  - name: Players
+    uniqueID: 2408695007
     locked: 0

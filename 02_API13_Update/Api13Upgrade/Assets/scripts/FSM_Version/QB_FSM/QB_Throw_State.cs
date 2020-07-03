@@ -20,7 +20,7 @@ public class QB_Throw_State : QB_Base_State
         targetReceiver = qb.Receiver_current.GetComponent<Receiver_Controller_FSM>();
         ball_Controller = qb.GetComponent<Ball_Controller>();
 
-        //this is so that we throw emedialty when we enter the state
+        //this is so that we throw imedialty when we enter the state
         if(targetIndicator == null)
         {
             targetIndicator = qb.InstantiateTargetIndicator(CalcTarget(qb));

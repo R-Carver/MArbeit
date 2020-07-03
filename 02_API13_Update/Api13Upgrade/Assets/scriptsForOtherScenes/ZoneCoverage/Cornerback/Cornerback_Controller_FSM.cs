@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace BlockingEnhancements
+namespace ZoneCoverage
 {
 public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwareness
 {
@@ -30,12 +30,23 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwaren
 
     #endregion
 
+    #region ZoneCoverage
+
+    public ZoneName zoneName;
+
+    public Zone zone;
+
+    #endregion
+
     #region FSM
 
     public Cornerback_Base_State currentState;
     public readonly Cornerback_Cover_State cover_State = new Cornerback_Cover_State();
     public readonly Cornerback_Intercept_State intercept_State = new Cornerback_Intercept_State();
     public readonly Cornerback_BallCaught_State ballCaught_State = new Cornerback_BallCaught_State();
+
+    public readonly Cornerback_GoToZone_State goToZone_State = new Cornerback_GoToZone_State();
+    public readonly Cornerback_Cover_InZone_State cover_inZone_State = new Cornerback_Cover_InZone_State();
 
     #endregion
 
@@ -48,10 +59,11 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwaren
         qB_Controller = GameObject.Find("QB").GetComponent<QB_Controller_FSM>();
 
         ball_controller.ballAwarePlayers.Add(this);
+        
 
         //get random skills for this player
-        //SetRandomSkill();
-        SetMaxSkill();
+        speed = Random.Range(2.5f, 4.5f);
+        reactionDelay = Random.Range(0.2f, 1.5f);
 
     }
 
@@ -59,15 +71,14 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwaren
     {
         //ballGo = GameObject.Find("Ball");
 
-        TransitionToState(cover_State);
+        TransitionToState(goToZone_State);
 
         //save startPos for reset later
         startPos = this.transform.position;
         startRot = this.transform.rotation;
 
-        //register yourself with the GameManager and the Cornerback Controller
+        //register yourself with the GameManager
         GameManager.Instance.allPlayers.Add(this);
-        Cornerback_Controller.Instance.allCornerbacks.Add(this.gameObject);
     }
 
     public void TransitionToState(Cornerback_Base_State state)
@@ -129,22 +140,10 @@ public class Cornerback_Controller_FSM : MonoBehaviour, IResettable, IBallAwaren
         myRb.angularVelocity = 0;
 
         //get random skills for this player
-        //SetRandomSkill();
-        SetMaxSkill();
-
-        TransitionToState(cover_State);
-    }
-
-    private void SetRandomSkill()
-    {
         speed = Random.Range(2.5f, 4.5f);
         reactionDelay = Random.Range(0.2f, 1.5f);
-    }
 
-    private void SetMaxSkill()
-    {
-        speed = 4.5f;
-        reactionDelay = 0.2f;
+        TransitionToState(goToZone_State);
     }
 
     public void UpdateBallInstance(GameObject ball)

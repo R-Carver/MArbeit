@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     public bool ballLaunched = false;
     public bool canThrow = false;
 
+    public TrainingInfo trainingText;
+
     void Awake()
     {
         if(Instance != null)
@@ -56,11 +58,15 @@ public class GameManager : MonoBehaviour
     }
 
     void ResetEnv()
-    {
+    {   
+        Cornerback_Controller.Instance.ActivateAll();
+
         foreach(IResettable player in allPlayers)
         {
             player.Reset();
         }
+
+        Cornerback_Controller.Instance.DeactivateOne();
 
         ManageScoreInformation();
 
@@ -97,12 +103,17 @@ public class GameManager : MonoBehaviour
         }
 
         float ratio = ((float)count_ballsCaught/(float)count_total);
+
+
         Debug.Log("Ratio: " + ratio);
-        Debug.Log("total throws:" + count_total + 
+        string info = "total throws:" + count_total + 
             " <color=red> sacks: <b>" + count_qbSacked + "</b>" +
             " interceptions: <b>" + count_intercepted + "</b></color>" +
             " <color=green> balls caught: <b>" + count_ballsCaught + "</b></color>" + 
-            " <color=black> success %: <b>" + System.Math.Round(ratio, 2) + "</b></color>");
+            " <color=black> success %: <b>" + System.Math.Round(ratio, 2) + "</b></color>";
+        Debug.Log(info);
+
+        trainingText.UpdateInfoText(info);
     }
 
     // Update is called once per frame
